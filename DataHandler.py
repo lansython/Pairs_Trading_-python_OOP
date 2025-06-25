@@ -35,8 +35,9 @@ class HistoricCSVDataHandler(DataHandler):
                 price = bar['close']              # Use closing price
                 self.latest_data[sym] = price     # Keep for mark-to-market
                 evt = MarketEvent(timestamp, sym, price)
-                self.events.put(evt)              # Push into event queue
+                self.events.put(evt)              # Push into event  queue
                 any_data = True
+        
             except StopIteration:
                 # No more data for this symbol
                 continue
