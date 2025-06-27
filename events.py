@@ -1,43 +1,38 @@
-import enum as Enum
+from enum import Enum
 
-#Define all events types our engine has to handle
+# Define all event types our engine has to handle
 class EventType(Enum):
-    Market="MARKET" # New Market data
-    Signal="SIGNAL" # Our Strategy wants to enter or exit trade
-    ORDER  = "ORDER" # ORDER is executed in market
-    FILL   = "FILL" # Actual trade execution with all microstructure noises (fees, taxes) added to update portfolio
+    Market = "MARKET"   # New Market data
+    Signal = "SIGNAL"   # Our strategy wants to enter or exit trade
+    ORDER  = "ORDER"    # Order has been sent to the market
+    FILL   = "FILL"     # Actual trade execution with fees/slippage
 
-
-# Base Event class, carries only the event type.
-class Event:                  
+# Base Event class
+class Event:
     def __init__(self, type):
-        self.type= type         # ex: Create an Event instance: evt = Event(EventType.MARKET) then we can call evt.type
+        self.type = type  # For example: EventType.Market
 
-# Event emitted when new market row price data is ready.
+# Event emitted when new market data is available
 class MarketEvent(Event):
     def __init__(self, timestamp, symbol, price):
-        super().__init__(EventType.Market) #tag as market event
-        self.timestamp= timestamp
-        self.symbol= symbol
-        self.price= price
-        
-class OrderEvent(Event):
-    def __init__(self, symbol, quantity):
-        super().__init__(EventType.ORDER)
-        self.symbol = symbol
-        self.quantity = quantity
+        super().__init__(EventType.Market)
+        self.timestamp = timestamp
+        self.symbol    = symbol
+        self.price     = price
 
-# Event emitted by the strategy indicating a buy/sell/exit.
+# Event emitted by strategy to signal trade intention
 class SignalEvent(Event):
     def __init__(self, symbol, datetime, signal_type, weight):
-        super().__init__(EventType.Signal) #tag as signal event
-        self.symbol= symbol                #symbol the signal is for
-        self.datetime= datetime            #Time of signal generation
-        self.signal_type= signal_type      #Long, short or exit
-        self.weight= weight                #sizing of signal
+        super().__init__(EventType.Signal)
+        self.symbol      = symbol
+        self.datetime    = datetime
+        self.signal_type = signal_type  # 'LONG', 'SHORT', or 'EXIT'
+        self.weight      = weight       # e.g., 1.0 = full position
 
-
-        
-
-
-
+# Optional: OrderEvent if you're using a Portfolio with order simulation
+class OrderEvent(Event):
+    def __init__(self, symbol, order_type, quantity):
+        super().__init__(EventType.ORDER)
+        self.symbol     = symbol
+        self.order_type = order_type  # Usually 'MKT' for market
+        self.quantity   = quantity
