@@ -20,6 +20,12 @@ class MarketEvent(Event):
         self.timestamp= timestamp
         self.symbol= symbol
         self.price= price
+        
+class OrderEvent(Event):
+    def __init__(self, symbol, quantity):
+        super().__init__(EventType.ORDER)
+        self.symbol = symbol
+        self.quantity = quantity
 
 # Event emitted by the strategy indicating a buy/sell/exit.
 class SignalEvent(Event):
